@@ -1,0 +1,121 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.time.Duration;
+import java.time.Instant;
+
+public class TwoApprox extends Heuristic{
+  File file;
+  
+  public TwoApprox(File file){
+    this.file = file;
+  }
+  
+  private int[] updateKeys(int[] key, ArrayList<Integer> citiesToCheck, int currentCity) throws FileNotFoundException{
+    int[] cityList = new int[citiesToCheck.size()];
+    for(int i = 0; i < citiesToCheck.size(); i++) cityList[i] = citiesToCheck.get(i);
+    int[] adjacent = getAdjacentCities(currentCity, cityList, file);
+    for(int i = 0; i < adjacent.length; i++){
+      int weight = (int)Math.round(getDist(getCoords(file, currentCity), getCoords(file, adjacent[i])));
+      if(weight < key[adjacent[i]]){
+        key[adjacent[i]] = weight;
+      }
+    }
+    return key;
+  }
+  
+  public int[] genKey() throws FileNotFoundException{ //generates a Minimum Spanning Tree using prim's algorithm
+    ArrayList<Integer> usedCities = new ArrayList<Integer>();
+    ArrayList<Integer> availableCities = new ArrayList<Integer>();
+    for(int i = 0; i < numCitiesToGen; i++){ //all cities are available at the beginning
+      availableCities.add(i);
+    }
+    int[] key = new int[numCitiesToGen];
+    Arrays.fill(key, Integer.MAX_VALUE); //assign each city the largest value possible, so that it gets updated later
+    key[0] = 0; //ensure start city is selected first
+    int currentIndex = -1; //ensures error will be caused if var is not updated
+    //boolean isKeyComplete = false;
+    while(usedCities.size() < key.length){ //ERROR IS HERE SOMEWHERE; NOT ALL KEYS ARE UPDATED
+      currentIndex = getMinIndex(key);
+      usedCities.add(availableCities.remove(currentIndex));
+      key = updateKeys(key, availableCities, currentIndex);
+      //for(int i: key
+    }
+    //System.out.println("key: " + Arrays.toString(key));
+    return key;
+  }
+  
+  private int getLowestAdjWeight(int currentCity, int[] key, ArrayList<Integer> availableCities) throws FileNotFoundException{
+    int numCities = availableCities.size();
+    if (numCities == 1) return availableCities.get(0); //if there's only 1 city left, return it 
+    int[] availCitArray = new int[numCities];
+    for(int i = 0; i < availCitArray.length; i++) availCitArray[i] = availableCities.get(i);
+    int[] adjacent = getAdjacentCities(currentCity, availCitArray, file);
+    //System.out.println("adjacent: " + Arrays.toString(adjacent));
+    int lowestWeight = Integer.MAX_VALUE; //forces update
+    int lowestWeightIndex = -1;
+    for(int i: adjacent){
+      //System.out.println("i: " + i + ". Key: " + key[i] + ". LowestWeight: " + lowestWeight);
+      if(key[i] < lowestWeight){
+        //System.out.println("if stmnt tripped.");
+        lowestWeight = key[i];
+        lowestWeightIndex = i;
+      }
+    }
+    return lowestWeightIndex;
+  }
+  
+  private boolean walkIncomplete(ArrayList<Integer> walk){
+    if(walk.get(walk.size() - 1) != 0) return true; //walk must end with starting point
+    for(int i = 0; i < numCitiesToGen; i++){ //walk must contain all cities at least once
+      if(!walk.contains(i)) return true;
+    }
+    return false;
+  }
+  
+  public int[] getFullWalk(int[] key) throws FileNotFoundException{
+    ArrayList<Integer> fullWalk = new ArrayList<Integer>();
+    fullWalk.add(0); //walk starts at first city
+    ArrayList<Integer> visitedCities = new ArrayList<Integer>();
+    ArrayList<Integer> availableCities = new ArrayList<Integer>();
+    for(int i = 0; i < numCitiesToGen; i++) availableCities.add(i); //gen list of all available cities
+    int currentCity = 0;
+    while(walkIncomplete(fullWalk)){
+      int next = getLowestAdjWeight(currentCity, key, availableCities);
+      if(!(visitedCities.contains(next))){
+        if(next != 0) availableCities.remove(next); //remove visited cities, except for start
+        fullWalk.add(next);
+        currentCity = next;
+      }
+    }
+    int[] fullWalk_Array = new int[fullWalk.size()];
+    for(int i = 0; i < fullWalk.size(); i++) fullWalk_Array[i] = fullWalk.get(i);
+    return fullWalk_Array;
+  }
+  
+  public Duration run() throws FileNotFoundException{
+    Instant start = Instant.now();
+    ArrayList<Integer> path = new ArrayList<Integer>();
+    path.add(0); //start point is start city
+    ArrayList<Integer> availableCities = new ArrayList<Integer>();
+    for(int i = 0; i < numCitiesToGen; i++) availableCities.add(i); //gen list of all available cities
+    availableCities.remove(0); //remove start city
+    int[] key = genKey();
+    System.out.println("Full walk" + Arrays.toString(getFullWalk(key)));
+    int lowestAdjWeight = -1;
+    for(int i = 1; i < numCitiesToGen; i++){ //adds the lowest weighted city  to path AND removes it from list of available cities
+      //System.out.println("Avail cities: " + availableCities.toString());
+      lowestAdjWeight = getLowestAdjWeight(i, key, availableCities);
+      //System.out.println("lowest adjacent weight index: " + lowestAdjWeight);
+      path.add(lowestAdjWeight);
+      availableCities.remove(availableCities.indexOf(lowestAdjWeight));
+    } 
+    Duration runtime = Duration.between(start, Instant.now());
+    System.out.println("Spanning Tree algorithm complete. Order: " + path.toString() + 
+                       ". Path length: " + getPathLength(file, path) + 
+                       ". Runtime: " + (runtime.getNano() * nanoConvFactor) + " seconds");
+    return runtime;
+  }
+  
+}
