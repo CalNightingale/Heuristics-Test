@@ -26,7 +26,6 @@ public class BruteForce extends Heuristic{
                        ". Runtime: " + (runtime.getNano() * nanoConvFactor) + " seconds");
     int[] pathArray = new int[shortestPath.size()];
     for(int i = 0; i < shortestPath.size(); i++) pathArray[i] = shortestPath.get(i);
-    System.out.println("BF path: " + Arrays.toString(pathArray));
     return pathArray;
   }
   

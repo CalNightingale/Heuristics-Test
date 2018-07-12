@@ -14,6 +14,7 @@ public class Greedy extends Heuristic{
   
   public Duration run() throws FileNotFoundException{
     ArrayList<Integer> usedCities = new ArrayList<Integer>();
+    Duration runtime;
     int currentCity = 0; //start from first city
     usedCities.add(currentCity); //include start city
     double shortestDist;
@@ -35,7 +36,10 @@ public class Greedy extends Heuristic{
       currentCity = closestCity;
       //System.out.println(usedCities.toString());
     }
-    System.out.println("Greedy algorithm complete. Order: " + usedCities.toString() + ". Path length: " + totalDist);
-    return Duration.between(start, Instant.now());
+    runtime = Duration.between(start, Instant.now());
+    System.out.println("Greedy algorithm complete. Order: " + usedCities.toString() + 
+                       ". Path length: " + totalDist + 
+                       ". Runtime: " + (runtime.getNano() * nanoConvFactor) + " seconds");
+    return runtime;
   }
 }

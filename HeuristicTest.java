@@ -25,7 +25,7 @@ public class HeuristicTest extends Heuristic{
     writer.close();
   }
   
-  public static void drawPath(int[] path, File file) throws FileNotFoundException{
+  public static void drawPath(int[] path, File file, String methodType) throws FileNotFoundException{
     int[] coordHolder = new int[2];
     double[] x = new double[path.length]; double[] y = new double[path.length];
     for(int i = 0; i < path.length; i++){ //assign the coordinates of all cities on path to x and y arrays 
@@ -36,6 +36,7 @@ public class HeuristicTest extends Heuristic{
     StdDraw.setScale(0, Math.pow(10, 6) + 1000); //sets scale to include all possible city locations
     StdDraw.setPenRadius(0.05);
     StdDraw.polygon(x, y);
+    StdDraw.save("C:/Users/calni/Documents/Programs/" + methodType + ".jpg");
   }
   
   public static void main(String[] args) throws FileNotFoundException{
@@ -46,10 +47,9 @@ public class HeuristicTest extends Heuristic{
     TwoApprox twoApprox = new TwoApprox(file);
     genCities(numCitiesToGen, file);
     System.out.println("DEBUG: run initialized");
-    greedy.run();
-    drawPath(bruteForce.run(), file);
-    drawPath(twoApprox.run(), file);
-    //twoApprox.drawPath(file);
+    drawPath(greedy.run(), file, "greedy");
+    //drawPath(bruteForce.run(), file, "bruteForce");
+    //drawPath(twoApprox.run(), file, "twoApprox");
     System.out.println("DEBUG: run completed");
   }
 }

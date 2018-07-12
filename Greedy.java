@@ -12,7 +12,7 @@ public class Greedy extends Heuristic{
     this.file = file;
   }
   
-  public Duration run() throws FileNotFoundException{
+  public int[] run() throws FileNotFoundException{
     ArrayList<Integer> usedCities = new ArrayList<Integer>();
     Duration runtime;
     int currentCity = 0; //start from first city
@@ -40,6 +40,8 @@ public class Greedy extends Heuristic{
     System.out.println("Greedy algorithm complete. Order: " + usedCities.toString() + 
                        ". Path length: " + totalDist + 
                        ". Runtime: " + (runtime.getNano() * nanoConvFactor) + " seconds");
-    return runtime;
+    int[] pathArray = new int[usedCities.size()];
+    for(int i = 0; i < usedCities.size(); i++) pathArray[i] = usedCities.get(i);
+    return pathArray;
   }
 }
