@@ -25,17 +25,30 @@ public class HeuristicTest extends Heuristic{
     writer.close();
   }
   
+  public static void drawPath(int[] path, File file) throws FileNotFoundException{
+    int[] coordHolder = new int[2];
+    double[] x = new double[path.length]; double[] y = new double[path.length];
+    for(int i = 0; i < path.length; i++){ //assign the coordinates of all cities on path to x and y arrays 
+      coordHolder = getCoords(file, path[i]);
+      x[i] = coordHolder[0]; y[i] = coordHolder[1];
+    }
+    StdDraw.setCanvasSize(800, 800);
+    StdDraw.setScale(0, Math.pow(10, 6) + 1000); //sets scale to include all possible city locations
+    StdDraw.setPenRadius(0.05);
+    StdDraw.polygon(x, y);
+  }
+  
   public static void main(String[] args) throws FileNotFoundException{
     Duration runTime;
     File file = new File("C:/Users/calni/Documents/Programs/cities.txt");
     BruteForce bruteForce = new BruteForce(file);
     Greedy greedy = new Greedy(file);
     TwoApprox twoApprox = new TwoApprox(file);
-    //genCities(numCitiesToGen, file);
+    genCities(numCitiesToGen, file);
     System.out.println("DEBUG: run initialized");
     greedy.run();
-    bruteForce.run();
-    twoApprox.run();
+    //bruteForce.run();
+    drawPath(twoApprox.run(), file);
     //twoApprox.drawPath(file);
     System.out.println("DEBUG: run completed");
   }
