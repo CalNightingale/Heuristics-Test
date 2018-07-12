@@ -28,7 +28,7 @@ public class BruteForce extends Heuristic{
   }
   
   public ArrayList<Integer> calcPerms(ArrayList<Integer> original) throws FileNotFoundException{
-    System.out.println("default path: " + original.toString());
+    //System.out.println("default path: " + original.toString());
     return getPermutation(new ArrayList<Integer>(), original);
   }
   

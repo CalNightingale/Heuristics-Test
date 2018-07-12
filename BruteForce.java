@@ -17,14 +17,17 @@ public class BruteForce extends Heuristic{
   public BruteForce(File file) throws FileNotFoundException{
     this.file = file;
   }
-  public Duration run() throws FileNotFoundException{
+  public int[] run() throws FileNotFoundException{
     Instant start = Instant.now(); //log start time of execution
     ArrayList<Integer> shortestPath = calcPerms(genDefaultPath()); //begin recursive function
     Duration runtime = Duration.between(start, Instant.now());
     System.out.println("BruteForce algorithm complete. Order: " + shortestPath.toString() + 
                        ". Path length: " + getPathLength(file, shortestPath) + 
                        ". Runtime: " + (runtime.getNano() * nanoConvFactor) + " seconds");
-    return runtime;
+    int[] pathArray = new int[shortestPath.size()];
+    for(int i = 0; i < shortestPath.size(); i++) pathArray[i] = shortestPath.get(i);
+    System.out.println("BF path: " + Arrays.toString(pathArray));
+    return pathArray;
   }
   
   public ArrayList<Integer> calcPerms(ArrayList<Integer> original) throws FileNotFoundException{

@@ -47,7 +47,7 @@ public class HeuristicTest extends Heuristic{
     genCities(numCitiesToGen, file);
     System.out.println("DEBUG: run initialized");
     greedy.run();
-    //bruteForce.run();
+    drawPath(bruteForce.run(), file);
     drawPath(twoApprox.run(), file);
     //twoApprox.drawPath(file);
     System.out.println("DEBUG: run completed");
